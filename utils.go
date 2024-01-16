@@ -11,7 +11,7 @@ func Debug(out []byte) {
 }
 
 // Print to stdout for NuShell to pickup
-func Return(out []byte) {
+func Send(out []byte) {
 	fmt.Print(string(out))
 	os.Stdout.Sync()
 }

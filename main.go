@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/tidwall/gjson"
 )
 
 // This Plugins Specific Signature, telling NuShell what this plugin is expecting to receive.
@@ -18,6 +20,12 @@ func Signatures() Signature {
 			RequiredPositional: []PositionalArg{
 				{
 					Name:  "a",
+					Desc:  "required integer value",
+					Shape: "Int",
+					VarID: nil,
+				},
+				{
+					Name:  "b",
 					Desc:  "required integer value",
 					Shape: "Int",
 					VarID: nil,
@@ -75,25 +83,46 @@ func Signatures() Signature {
 	}
 }
 
-func ProcessCall(r Request) Response {
+type Ints []struct {
+	Int struct {
+		Val          int `json:"val"`
+		InternalSpan struct {
+			Start int `json:"start"`
+			End   int `json:"end"`
+		} `json:"internal_span"`
+	} `json:"Int"`
+}
 
-	pos := r.CallInfo.Call.Positional
+func ProcessCall(r gjson.Result) []byte {
+	pos := r.Get("call.positional")
 
-	return_value := 0
-	for _, values := range pos {
-		return_value = values.Int.Val
+	Debug([]byte(pos.String()))
+
+	res := Ints{}
+	err := json.Unmarshal([]byte(pos.String()), &res)
+
+	if err != nil {
+		Debug([]byte(err.Error()))
 	}
 
-	return Response{
-		Value{
-			Int{
-				Val: return_value,
-				InternalSpan: InternalSpan{
-					Start: 0, End: 1,
-				},
-			},
-		},
+	endResult := 0
+	for _, item := range res {
+		Debug([]byte(fmt.Sprint(item.Int.Val)))
+
+		endResult += item.Int.Val
 	}
+
+	return []byte(`{
+		"Value": {
+		  "Int": {
+			"val": ` + fmt.Sprint(endResult) + `,
+			"internal_span": {
+			  "start": 100953,
+			  "end": 100957
+			}
+		  }
+		}
+	  }`)
 }
 
 func Plugin() {
@@ -103,25 +132,23 @@ func Plugin() {
 	// Get input from nushell
 	var input string
 	fmt.Scan(&input)
-
-	// Convert JSON to struct
-	pluginCall := Request{}
-	json.Unmarshal([]byte(input), &pluginCall)
+	res := gjson.Parse(input)
 
 	// If NuShell is requesting the signature, return the signature.
 	// This is called when nushell calls `register` on it.
 	if input == "\"Signature\"" {
 		signature := Signatures()
 		signatureJSON, _ := json.Marshal(map[string]interface{}{"Signature": []Signature{signature}})
-		Return(signatureJSON)
+		Send(signatureJSON)
 		return
 	}
 
 	// Handle plugin input
-	if pluginCall.CallInfo.Name == "nu-golang" {
-		response := ProcessCall(pluginCall)
-		responseJSON, _ := json.Marshal(response)
-		Return(responseJSON)
+	if res.Get("CallInfo.name").Str == "nu-golang" {
+		Debug([]byte(res.String()))
+		response := ProcessCall(res.Get("CallInfo"))
+		// responseJSON, _ := json.Marshal(response)
+		Send(response)
 		return
 	}
 
