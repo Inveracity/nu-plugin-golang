@@ -3,14 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
+	"log"
 
 	"github.com/tidwall/gjson"
 
 	nu "github.com/Inveracity/nu-plugin-golang/pkg/v1"
 )
 
-func ProcessCall(r gjson.Result) []byte {
+func ProcessCall(r gjson.Result) ([]byte, error) {
 	pos := r.Get("call.positional")
 
 	// Debug([]byte(pos.String()))
@@ -28,27 +28,17 @@ func ProcessCall(r gjson.Result) []byte {
 
 		endResult += item.Int.Val
 	}
+	response := nu.Response{}
+	response.Value = nu.Value{Int: nu.Int{Val: endResult, InternalSpan: nu.InternalSpan{Start: 0, End: 0}}}
 
-	newint := nu.Response{
-		Value: Int{
-			Val:          endResult,
-			InternalSpan: nu.InternalSpan{Start: 0, End: 1},
-		},
+	jsonOutput, err := json.Marshal(response)
+	if err != nil {
+		return []byte{}, err
 	}
-	return []byte(`{
-		"Value": {
-		  "Int": {
-			"val": ` + fmt.Sprint(endResult) + `,
-			"internal_span": {
-			  "start": 100953,
-			  "end": 100957
-			}
-		  }
-		}
-	  }`)
+	return jsonOutput, nil
 }
 
-func Plugin() {
+func Plugin() (err error) {
 	// Tell NuShell it's a plugin
 	nu.Sendencoding()
 
@@ -59,34 +49,38 @@ func Plugin() {
 
 	// If NuShell is requesting the signature, return the signature.
 	// This is called when nushell calls `register` on it.
-	if input == "\"Signature\"" {
+	if input == `"Signature"` {
 		signature := Signatures()
 		signatureJSON, _ := json.Marshal(map[string]interface{}{"Signature": []nu.Signature{signature}})
 		nu.Send(signatureJSON)
-		return
+		return nil
 	}
 
 	// Handle plugin input
 	if res.Get("CallInfo.name").Str == "nu-golang" {
 		// Debug([]byte(res.String()))
-		response := ProcessCall(res.Get("CallInfo"))
+		response, err := ProcessCall(res.Get("CallInfo"))
+		if err != nil {
+			return err
+		}
 		// responseJSON, _ := json.Marshal(response)
 		nu.Send(response)
-		return
+		return nil
 	}
 
-	// TODO: Figure out how to handle error and return them nicely, probably make a function out of this
-	errorMsg := nu.Error{
-		Label: "ERROR from plugin",
-		Msg:   "error message pointing to call head span",
-		Span:  map[string]int{"start": 0, "end": 1},
+	err_msg, err := nu.NewError("Plugin Error!", err.Error())
+	if err != nil {
+		return err
 	}
 
-	errorJSON, _ := json.Marshal(errorMsg)
-	fmt.Print(string(errorJSON))
-	os.Stdout.Sync()
+	nu.Send(err_msg)
+
+	return nil
 }
 
 func main() {
-	Plugin()
+	err := Plugin()
+	if err != nil {
+		log.Panic(err)
+	}
 }

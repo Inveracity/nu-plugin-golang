@@ -1,11 +1,5 @@
 package main
 
-type Error struct {
-	Label string         `json:"label"`
-	Msg   string         `json:"msg"`
-	Span  map[string]int `json:"span"`
-}
-
 type InternalSpan struct {
 	Start int `json:"start"`
 	End   int `json:"end"`
