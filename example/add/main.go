@@ -29,7 +29,12 @@ func ProcessCall(r gjson.Result) []byte {
 		endResult += item.Int.Val
 	}
 
-	// newint := nu.Ints{}
+	newint := nu.Response{
+		Value: Int{
+			Val:          endResult,
+			InternalSpan: nu.InternalSpan{Start: 0, End: 1},
+		},
+	}
 	return []byte(`{
 		"Value": {
 		  "Int": {
