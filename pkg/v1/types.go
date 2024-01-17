@@ -1,4 +1,4 @@
-package main
+package v1
 
 type InternalSpan struct {
 	Start int `json:"start"`

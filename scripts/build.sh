@@ -1,4 +1,7 @@
-set -e
-go build -o nu_plugin_golang *.go
-nu -c "register nu_plugin_golang"
-nu -c "nu-golang 2 234"
+#!/bin/sh
+go build -o bin/nu_plugin_addv2 cmd/add/*.go
+
+nu -c "register bin/nu_plugin_addv2"
+
+nu -c "addv2 --help"
+nu -c "addv2 1 2"

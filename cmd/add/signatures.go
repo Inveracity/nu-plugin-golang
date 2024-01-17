@@ -8,11 +8,11 @@ import (
 func Signatures() nu.Signature {
 	return nu.Signature{
 		Sig: nu.SignatureDetails{
-			Name:       "nu-golang",
+			Name:       "addv2",
 			Usage:      "Signature test for golang",
 			ExtraUsage: "",
-			InputType:  "Any",
-			OutputType: "Any",
+			InputType:  "Nothing",
+			OutputType: "Nothing",
 			RequiredPositional: []nu.PositionalArg{
 				{
 					Name:  "a",
@@ -28,19 +28,17 @@ func Signatures() nu.Signature {
 				},
 			},
 			OptionalPositional: []nu.PositionalArg{
-				{
-					Name:  "opt",
-					Desc:  "Optional number",
-					Shape: "Int",
-					VarID: nil,
-				},
+				// Name:  nil,
+				// Desc:  nil,
+				// Shape: nil,
+				// VarID: nil,
 			},
-			RestPositional: nu.PositionalArg{
-				Name:  "rest",
-				Desc:  "rest value string",
-				Shape: "String",
-				VarID: nil,
-			},
+			RestPositional: nil, // &nu.PositionalArg{
+			// Name:  "rest",
+			// Desc:  "rest value string",
+			// Shape: "String",
+			// VarID: nil,
+			//},
 			Named: []nu.NamedArg{
 				{
 					Long:     "help",
@@ -50,24 +48,24 @@ func Signatures() nu.Signature {
 					Desc:     "Display the help message for this command",
 					VarID:    nil,
 				},
-				{
-					Long:     "flag",
-					Short:    "f",
-					Arg:      nil,
-					Required: false,
-					Desc:     "a flag for the signature",
-					VarID:    nil,
-				},
-				{
-					Long:     "named",
-					Short:    "n",
-					Arg:      "String",
-					Required: false,
-					Desc:     "named string",
-					VarID:    nil,
-				},
+				// 	{
+				// 		Long:     "flag",
+				// 		Short:    "f",
+				// 		Arg:      nil,
+				// 		Required: false,
+				// 		Desc:     "a flag for the signature",
+				// 		VarID:    nil,
+				// 	},
+				// 	{
+				// 		Long:     "named",
+				// 		Short:    "n",
+				// 		Arg:      "String",
+				// 		Required: false,
+				// 		Desc:     "named string",
+				// 		VarID:    nil,
+				// 	},
 			},
-			InputOutputTypes:             [][]string{{"Any", "Any"}},
+			InputOutputTypes:             [][]string{{"Nothing", "Nothing"}},
 			AllowVariantsWithoutExamples: true,
 			SearchTerms:                  []string{"golang", "Example"},
 			IsFilter:                     false,

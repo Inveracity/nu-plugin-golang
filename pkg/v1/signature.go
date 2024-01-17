@@ -1,4 +1,4 @@
-package main
+package v1
 
 type Signature struct {
 	Sig      SignatureDetails `json:"sig"`
@@ -13,7 +13,7 @@ type SignatureDetails struct {
 	OutputType                   string          `json:"output_type"`
 	RequiredPositional           []PositionalArg `json:"required_positional"`
 	OptionalPositional           []PositionalArg `json:"optional_positional"`
-	RestPositional               PositionalArg   `json:"rest_positional"`
+	RestPositional               *PositionalArg  `json:"rest_positional,omitempty"`
 	Named                        []NamedArg      `json:"named"`
 	InputOutputTypes             [][]string      `json:"input_output_types"`
 	AllowVariantsWithoutExamples bool            `json:"allow_variants_without_examples"`
@@ -25,10 +25,10 @@ type SignatureDetails struct {
 }
 
 type PositionalArg struct {
-	Name  string      `json:"name"`
-	Desc  string      `json:"desc"`
-	Shape string      `json:"shape"`
-	VarID interface{} `json:"var_id"`
+	Name  string       `json:"name"`
+	Desc  string       `json:"desc"`
+	Shape string       `json:"shape"`
+	VarID *interface{} `json:"var_id"`
 }
 
 type NamedArg struct {
