@@ -27,18 +27,8 @@ func Signatures() nu.Signature {
 					VarID: nil,
 				},
 			},
-			OptionalPositional: []nu.PositionalArg{
-				// Name:  nil,
-				// Desc:  nil,
-				// Shape: nil,
-				// VarID: nil,
-			},
-			RestPositional: nil, // &nu.PositionalArg{
-			// Name:  "rest",
-			// Desc:  "rest value string",
-			// Shape: "String",
-			// VarID: nil,
-			//},
+			OptionalPositional: []nu.PositionalArg{},
+			RestPositional:     nil,
 			Named: []nu.NamedArg{
 				{
 					Long:     "help",
@@ -48,22 +38,6 @@ func Signatures() nu.Signature {
 					Desc:     "Display the help message for this command",
 					VarID:    nil,
 				},
-				// 	{
-				// 		Long:     "flag",
-				// 		Short:    "f",
-				// 		Arg:      nil,
-				// 		Required: false,
-				// 		Desc:     "a flag for the signature",
-				// 		VarID:    nil,
-				// 	},
-				// 	{
-				// 		Long:     "named",
-				// 		Short:    "n",
-				// 		Arg:      "String",
-				// 		Required: false,
-				// 		Desc:     "named string",
-				// 		VarID:    nil,
-				// 	},
 			},
 			InputOutputTypes:             [][]string{{"Nothing", "Nothing"}},
 			AllowVariantsWithoutExamples: true,
